@@ -27,7 +27,7 @@ package com.kingOf0.smartinventory.smartinventory.event;
 
 import com.kingOf0.smartinventory.smartinventory.InventoryContents;
 import com.kingOf0.smartinventory.smartinventory.event.abs.BottomClickEvent;
-import org.bukkit.Bukkit;
+import com.tcoded.folialib.FoliaLib;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -55,10 +55,18 @@ public final class PgBottomClickEvent implements BottomClickEvent {
     @NotNull
     private final Plugin plugin;
 
-    public PgBottomClickEvent(@NotNull InventoryContents contents, @NotNull InventoryClickEvent event, @NotNull Plugin plugin) {
+    /**
+     * the folialib.
+     */
+    @NotNull
+    private final FoliaLib foliaLib;
+
+
+    public PgBottomClickEvent(@NotNull InventoryContents contents, @NotNull InventoryClickEvent event, @NotNull Plugin plugin, @NotNull FoliaLib foliaLib) {
         this.contents = contents;
         this.event = event;
         this.plugin = plugin;
+        this.foliaLib = foliaLib;
     }
 
     @Override
@@ -68,7 +76,7 @@ public final class PgBottomClickEvent implements BottomClickEvent {
 
     @Override
     public void close() {
-        Bukkit.getScheduler().runTask(this.plugin, () ->
+        foliaLib.getScheduler().runAtEntity(this.contents.player(), task ->
                 this.contents.page().close(this.contents.player()));
     }
 

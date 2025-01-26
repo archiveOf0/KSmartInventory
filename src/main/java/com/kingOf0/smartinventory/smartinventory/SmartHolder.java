@@ -25,6 +25,7 @@
 
 package com.kingOf0.smartinventory.smartinventory;
 
+import com.tcoded.folialib.FoliaLib;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
@@ -66,6 +67,15 @@ public interface SmartHolder extends InventoryHolder {
      */
     @NotNull
     Plugin getPlugin();
+
+
+    /**
+     * obtains the FoliaLib.
+     *
+     * @return FoliaLib.
+     */
+    @NotNull
+    FoliaLib getFolialib();
 
     /**
      * checks if the holder is active.

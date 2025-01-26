@@ -28,9 +28,11 @@ package com.kingOf0.smartinventory.smartinventory.holder;
 import com.kingOf0.smartinventory.smartinventory.InventoryContents;
 import com.kingOf0.smartinventory.smartinventory.Page;
 import com.kingOf0.smartinventory.smartinventory.SmartHolder;
+import com.tcoded.folialib.FoliaLib;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -81,6 +83,11 @@ public final class SmartInventoryHolder implements SmartHolder {
     @Override
     public Plugin getPlugin() {
         return this.getPage().inventory().getPlugin();
+    }
+
+    @Override
+    public @NotNull FoliaLib getFolialib() {
+        return new FoliaLib((JavaPlugin) getPlugin());
     }
 
     @Override

@@ -76,7 +76,7 @@ public final class InventoryClickListener implements Listener {
         }
         final HumanEntity player = event.getWhoClicked();
         if (clicked.equals(player.getOpenInventory().getBottomInventory())) {
-            page.accept(new PgBottomClickEvent(contents, event, plugin));
+            page.accept(new PgBottomClickEvent(contents, event, plugin, smartHolder.getFolialib()));
             return;
         }
         final ItemStack current = event.getCurrentItem();

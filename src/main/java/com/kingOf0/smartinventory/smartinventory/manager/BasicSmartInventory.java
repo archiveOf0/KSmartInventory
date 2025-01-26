@@ -27,8 +27,10 @@ package com.kingOf0.smartinventory.smartinventory.manager;
 
 import com.kingOf0.smartinventory.smartinventory.InventoryOpener;
 import com.kingOf0.smartinventory.smartinventory.SmartInventory;
+import com.kingOf0.smartinventory.smartinventory.util.CancellableRunnable;
+import com.tcoded.folialib.FoliaLib;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -56,10 +58,15 @@ public final class BasicSmartInventory implements SmartInventory {
         return plugin;
     }
 
+    @Override
+    public @NotNull FoliaLib getFoliaLib() {
+        return new FoliaLib((JavaPlugin) plugin);
+    }
+
     /**
      * the tasks.
      */
-    private final Map<UUID, BukkitRunnable> tasks = new ConcurrentHashMap<>();
+    private final Map<UUID, CancellableRunnable> tasks = new ConcurrentHashMap<>();
 
     static {
         try {
@@ -81,12 +88,12 @@ public final class BasicSmartInventory implements SmartInventory {
 
     @NotNull
     @Override
-    public Map<UUID, BukkitRunnable> getTasks() {
+    public Map<UUID, CancellableRunnable> getTasks() {
         return tasks;
     }
 
     @Override
-    public @NotNull Optional<BukkitRunnable> getTask(@NotNull UUID uniqueId) {
+    public @NotNull Optional<CancellableRunnable> getTask(@NotNull UUID uniqueId) {
         return SmartInventory.super.getTask(uniqueId);
     }
 }
