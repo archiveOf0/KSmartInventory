@@ -28,13 +28,15 @@ package com.kingOf0.smartinventory.smartinventory;
 import com.kingOf0.smartinventory.smartinventory.event.PgTickEvent;
 import com.kingOf0.smartinventory.smartinventory.listener.*;
 import com.kingOf0.smartinventory.smartinventory.opener.ChestInventoryOpener;
+import com.kingOf0.smartinventory.smartinventory.util.CancellableRunnable;
+import com.tcoded.folialib.FoliaLib;
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -187,13 +189,21 @@ public interface SmartInventory {
     Plugin getPlugin();
 
     /**
+     * obtains the folialib.
+     *
+     * @return the plugin.
+     */
+    @NotNull
+    FoliaLib getFoliaLib();
+
+    /**
      * obtains the given uniqueId's task.
      *
      * @param uniqueId the uniqueId to obtain.
-     * @return a {@link BukkitRunnable} instance.
+     * @return a {@link WrappedTask} instance.
      */
     @NotNull
-    default Optional<BukkitRunnable> getTask(@NotNull final UUID uniqueId) {
+    default Optional<CancellableRunnable> getTask(@NotNull final UUID uniqueId) {
         return Optional.ofNullable(this.getTasks().get(uniqueId));
     }
 
@@ -203,7 +213,7 @@ public interface SmartInventory {
      * @return tasks.
      */
     @NotNull
-    Map<UUID, BukkitRunnable> getTasks();
+    Map<UUID, CancellableRunnable> getTasks();
 
     /**
      * initiates the manager.
@@ -237,7 +247,7 @@ public interface SmartInventory {
      * @param uniqueId the unique id to set.
      * @param task     the task to set.
      */
-    default void setTask(@NotNull final UUID uniqueId, @NotNull final BukkitRunnable task) {
+    default void setTask(@NotNull final UUID uniqueId, @NotNull final CancellableRunnable task) {
         this.getTasks().put(uniqueId, task);
     }
 
@@ -248,7 +258,7 @@ public interface SmartInventory {
      */
     default void stopTick(@NotNull final UUID uniqueId) {
         this.getTask(uniqueId).ifPresent(runnable -> {
-            Bukkit.getScheduler().cancelTask(runnable.getTaskId());
+            runnable.cancel();
             this.removeTask(uniqueId);
         });
     }
@@ -260,7 +270,7 @@ public interface SmartInventory {
      * @param page     the page to start.
      */
     default void tick(@NotNull final UUID uniqueId, @NotNull final Page page) {
-        final BukkitRunnable task = new BukkitRunnable() {
+        final CancellableRunnable task = new CancellableRunnable() {
             @Override
             public void run() {
                 SmartInventory.getHolder(uniqueId)
@@ -273,9 +283,9 @@ public interface SmartInventory {
         };
         this.setTask(uniqueId, task);
         if (page.async()) {
-            task.runTaskTimerAsynchronously(this.getPlugin(), page.startDelay(), page.tick());
+            getFoliaLib().getScheduler().runTimerAsync(task, page.startDelay(), page.tick());
         } else {
-            task.runTaskTimer(this.getPlugin(), page.startDelay(), page.tick());
+            getFoliaLib().getScheduler().runTimer(task, page.startDelay(), page.tick());
         }
     }
 
